@@ -1,0 +1,10 @@
+prefix=C:/Program Files (x86)/gc
+exec_prefix=${prefix}
+libdir=C:/Program Files (x86)/gc/lib
+includedir=C:/Program Files (x86)/gc/include
+
+Name: Boehm-Demers-Weiser Conservative Garbage Collector
+Description: A garbage collector for C and C++
+Version: 8.3.0
+Libs: -L${libdir}  -lgc 
+Cflags: -I${includedir}
