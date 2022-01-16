@@ -9,9 +9,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="C:\workspace\bdwgc\CMakeLists.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <Filter Include="Source Files">
       <UniqueIdentifier>{41B9E42A-0E20-3E7F-8BB0-8B141E0C6775}</UniqueIdentifier>
     </Filter>
