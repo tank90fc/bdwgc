@@ -172,3 +172,4 @@ gc.def
 out/CMakeFiles
 out/x64
 out/Testing
+out/gctest/x64/
