@@ -257,6 +257,23 @@ static GC_bool get_index(word addr)
     return(TRUE);
 }
 
+STATIC void SetHdr(struct hblk* hbp, hdr* hhdr)
+{
+
+    REGISTER hdr** _ha;
+    //REGISTER bottom_index* bi; 
+    REGISTER word hi = (word)(hbp) >> (LOG_BOTTOM_SZ + LOG_HBLKSIZE);
+    REGISTER int index = TL_HASH(hi);
+    REGISTER bottom_index* _bi = GC_top_index[index];
+
+    while (_bi->key != hi && _bi != GC_all_nils)
+        _bi = _bi->hash_link;
+
+    int indexTemp = ((word)(hbp) >> LOG_HBLKSIZE) & (BOTTOM_SZ - 1);
+    (_bi)->index[indexTemp] = hhdr;
+}
+
+
 /* Install a header for block h.        */
 /* The header is uninitialized.         */
 /* Returns the header or 0 on failure.  */
@@ -267,7 +284,8 @@ GC_INNER struct hblkhdr * GC_install_header(struct hblk *h)
     if (!get_index((word) h)) return(0);
     result = alloc_hdr();
     if (result) {
-      SET_HDR(h, result);
+      SetHdr(h, result);
+      //SET_HDR(h, result);
 #     ifdef USE_MUNMAP
         result -> hb_last_reclaimed = (unsigned short)GC_gc_no;
 #     endif

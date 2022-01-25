@@ -730,6 +730,23 @@ GC_allochblk(size_t sz, int kind, unsigned flags/* IGNORE_OFF_PAGE or 0 */)
     return result;
 }
 
+STATIC hdr* GetHdr(struct hblk* hbp)
+{
+    hdr* hhdr = NULL;
+    REGISTER hdr** _ha; 
+    //REGISTER bottom_index* bi; 
+    REGISTER word hi = (word)(hbp) >> (LOG_BOTTOM_SZ + LOG_HBLKSIZE);
+    REGISTER int index = TL_HASH(hi);
+    REGISTER bottom_index* _bi = GC_top_index[index];
+
+    while (_bi->key != hi && _bi != GC_all_nils) 
+        _bi = _bi->hash_link; 
+    
+    (_ha) = &(_bi)->index[((word)(hbp) >> LOG_HBLKSIZE) & (BOTTOM_SZ - 1)];
+    (hhdr) = *_ha;
+    return hhdr;
+}
+
 STATIC long GC_large_alloc_warn_suppressed = 0;
                         /* Number of warnings suppressed so far.        */
 
@@ -757,6 +774,8 @@ GC_allochblk_nth(size_t sz, int kind, unsigned flags, int n, int may_split)
             } else {
               return NULL;
             }
+
+            hhdr = GetHdr(hbp);
             GET_HDR(hbp, hhdr); /* set hhdr value */
             size_avail = (signed_word)hhdr->hb_sz;
             if (size_avail < size_needed) continue;

@@ -1375,6 +1375,9 @@ void run_one_test(void)
         GC_printf("GC_size produced unexpected results\n");
         FAIL;
       }
+      int size1 = GC_size(GC_malloc(17));
+      size1 = GC_size(GC_malloc(33));
+
       AO_fetch_and_add1(&collectable_count);
       if (GC_size(GC_malloc(0)) != MIN_WORDS * sizeof(GC_word)) {
         GC_printf("GC_malloc(0) failed: GC_size returns %lu\n",
