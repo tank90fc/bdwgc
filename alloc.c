@@ -429,6 +429,12 @@ GC_INNER GC_bool GC_should_collect(void)
 # endif
     if (GC_disable_automatic_collection) return FALSE;
 
+    word adj_bytes_allocd = GC_adj_bytes_allocd();
+
+    GC_DBGLOG_PRINTF("GC_should_collect adj_bytes_allocd %lu last_min_bytes_allocd %lu GC_heapsize %lu GC_collect_at_heapsize %lu \n",
+        adj_bytes_allocd, last_min_bytes_allocd,
+        GC_heapsize, GC_collect_at_heapsize);
+
     return(GC_adj_bytes_allocd() >= last_min_bytes_allocd
            || GC_heapsize >= GC_collect_at_heapsize);
 }
