@@ -260,7 +260,6 @@ static GC_bool get_index(word addr)
 STATIC void SetHdr(struct hblk* hbp, hdr* hhdr)
 {
 
-    REGISTER hdr** _ha;
     //REGISTER bottom_index* bi; 
     REGISTER word hi = (word)(hbp) >> (LOG_BOTTOM_SZ + LOG_HBLKSIZE);
     REGISTER int index = TL_HASH(hi);
