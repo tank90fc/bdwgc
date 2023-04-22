@@ -319,7 +319,12 @@ static word min_bytes_allocd(void)
 #     elif defined(STACK_GROWS_UP)
         stack_size = GC_approx_sp() - GC_stackbottom;
 #     else
-        stack_size = GC_stackbottom - GC_approx_sp();
+        ptr_t approx = GC_approx_sp();
+        stack_size = GC_stackbottom - approx;
+
+        GC_DBGLOG_PRINTF("min_bytes_allocd approx %lu GC_stackbottom %lu stack_size %lu \n",
+            approx, GC_stackbottom, stack_size);
+
 #     endif
     }
 
@@ -431,9 +436,9 @@ GC_INNER GC_bool GC_should_collect(void)
 
     word adj_bytes_allocd = GC_adj_bytes_allocd();
 
-    GC_DBGLOG_PRINTF("GC_should_collect adj_bytes_allocd %lu last_min_bytes_allocd %lu GC_heapsize %lu GC_collect_at_heapsize %lu \n",
+    /*GC_DBGLOG_PRINTF("GC_should_collect adj_bytes_allocd %lu last_min_bytes_allocd %lu GC_heapsize %lu GC_collect_at_heapsize %lu \n",
         adj_bytes_allocd, last_min_bytes_allocd,
-        GC_heapsize, GC_collect_at_heapsize);
+        GC_heapsize, GC_collect_at_heapsize);*/
 
     return(GC_adj_bytes_allocd() >= last_min_bytes_allocd
            || GC_heapsize >= GC_collect_at_heapsize);

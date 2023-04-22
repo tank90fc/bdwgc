@@ -1358,6 +1358,12 @@ void run_one_test(void)
     struct thr_hndl_sb_s thr_hndl_sb;
 
     GC_FREE(0);
+
+    void *pppppp = GC_malloc(7);
+    void* pppppp2 = GC_malloc(7);
+    void* pppppp3 = GC_malloc(7);
+
+    GC_gcollect();
 #   ifdef THREADS
       if (!GC_thread_is_registered() && GC_is_init_called()) {
         GC_printf("Current thread is not registered with GC\n");
@@ -2002,7 +2008,7 @@ void enable_incremental_mode(void)
 #   endif
     GC_COND_INIT();
     GC_set_warn_proc(warn_proc);
-    enable_incremental_mode();
+    //enable_incremental_mode();
     set_print_procs();
     GC_start_incremental_collection();
     run_one_test();

@@ -344,7 +344,9 @@ GC_INLINE mse * GC_push_contents_hdr(ptr_t current, mse * mark_stack_top,
 #   endif /* MARK_BIT_PER_OBJ */
     TRACE(source, GC_log_printf("GC #%lu: passed validity tests\n",
                                 (unsigned long)GC_gc_no));
-    SET_MARK_BIT_EXIT_IF_SET(hhdr, gran_displ); /* contains "break" */
+    //SET_MARK_BIT_EXIT_IF_SET(hhdr, gran_displ); /* contains "break" */
+    if (set_mark_bit_exit_if_set(hhdr, gran_displ))
+        break;
     TRACE(source, GC_log_printf("GC #%lu: previously unmarked\n",
                                 (unsigned long)GC_gc_no));
     TRACE_TARGET(base, GC_log_printf("GC #%lu: marking %p from %p instead\n",
@@ -358,6 +360,35 @@ GC_INLINE mse * GC_push_contents_hdr(ptr_t current, mse * mark_stack_top,
   return mark_stack_top;
 }
 
+
+//#   define OR_WORD_EXIT_IF_SET(addr, bits) \
+//        { /* cannot use do-while(0) here */ \
+//           word old = *(addr); \
+//           word my_bits = (bits); \
+//           if ((old & my_bits) != 0) \
+//             break; /* go to the enclosing loop end */ \
+//           *(addr) = old | my_bits; \
+//        }
+//# endif /* !PARALLEL_MARK */
+//# define SET_MARK_BIT_EXIT_IF_SET(hhdr, bit_no) \
+//    { /* cannot use do-while(0) here */ \
+//        word * mark_word_addr = (hhdr)->hb_marks + divWORDSZ(bit_no); \
+//        OR_WORD_EXIT_IF_SET(mark_word_addr, \
+//                (word)1 << modWORDSZ(bit_no)); /* contains "break" */ \
+//    }
+
+GC_bool set_mark_bit_exit_if_set(hdr* hhdr, size_t bit_no)
+{
+    word* mark_word_addr = (hhdr)->hb_marks; 
+    mark_word_addr += (bit_no) >> LOGWL;
+    word bits = (word)1 << modWORDSZ(bit_no);
+    word old = *(mark_word_addr); 
+    word my_bits = bits; 
+    if ((old & my_bits) != 0) 
+        return TRUE;
+    *(mark_word_addr) = old | my_bits;
+    return FALSE;
+}
 #if defined(PRINT_BLACK_LIST) || defined(KEEP_BACK_PTRS)
 # define PUSH_ONE_CHECKED_STACK(p, source) \
         GC_mark_and_push_stack((ptr_t)(p), (ptr_t)(source))
